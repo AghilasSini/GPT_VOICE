@@ -1,5 +1,5 @@
 # ChatGPTVoice
 
-#LM STUDIO 
+### LM STUDIO 
 https://lmstudio.ai/
 
