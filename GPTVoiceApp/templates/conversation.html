@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="../static/bootstrap.css">
+  <script src="../static/bootstrap.js"></script>
+  <script src="../static/jquery.js"></script>
+  <script src="../static/jquery-ui.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <title>File Upload</title>
+
+</head>
+
+<body>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <ul class="flashes">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{{ url_for('index') }}">GptVoice</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </nav>
+
+
+  <div class="m-3">
+    <div class="row text-center mx-auto">
+
+      <!-------------------------------------------------------------------------------------------------------------------------------------------->
+      <!---------------GPT DIALOG WITH ALL AUDIO------------------------------------------------------------------------------------------------------->
+      <!-------------------------------------------------------------------------------------------------------------------------------------------->
+
+      
+      <div class="col-12 d-flex justify-content-center align-items-center">
+        <div class="card text-white bg-dark mb-3" style="width: 1000px; overflow-y: auto; ">
+          <div class="card-header">GPT DIALOG WITH ALL AUDIO 
+            <br>
+            <div class="container">
+              <div class="row">
+                  <div class="col-md-4">
+                      <form method="POST" action="/conversation" enctype="multipart/form-data"> 
+                          <button class="btn btn-danger" type="submit" name="export2">Export</button>
+                      </form>
+                  </div>
+                  <div class="col-md-4">
+                      <form method="POST" action="/conversation" enctype="multipart/form-data"> 
+                          <button class="btn btn-danger" type="submit" name="reload">Reload Last</button>
+                      </form>
+                  </div>
+                  <div class="col-md-4">
+                      <form method="POST" action="/conversation" enctype="multipart/form-data"> 
+                          <button class="btn btn-danger" type="submit" name="generate_voice">Generate All Audio</button>
+                      </form>
+                  </div>
+              </div>
+          </div>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Connection</h5>
+            <p class="card-text">{{ response_gpt_V4[0]["content"][0] }}</p>
+            <form method="POST" action="/conversation" enctype="multipart/form-data">
+              <div class="form-group">
+                <input type="text" class="form-control" id="exampleInputPassword1" name="gpt_question_all_voices"
+                  placeholder="Remplir">
+              </div>
+              <button class="btn btn-light mt-2" type="submit">Submit</button>
+            </form>
+            <br>
+            {% if response_gpt_V4 %}
+
+              {% for k in range (response_gpt_V4|length) %}
+               
+
+                {% if response_gpt_V4[k]["role"] == "user" %}
+                <div class="alert alert-primary" role="alert">
+                  <h4>{{ response_gpt_V4[k]["role"] }}</h1>
+                    <p>{{ response_gpt_V4[k]["content"][0] }}</p>
+
+                    {% for file in response_gpt_V4[k]['list_fichier'] %}
+                      <audio controls>
+                      
+                        <source src="../static/audio/{{ file[0] }}" type="audio/wav">
+                        Your browser does not support the audio element.
+                      </audio>
+                    {% endfor %}
+                    <br>
+
+                    <form method="POST" action="/conversation">
+                      <input type="hidden" name="id_message" value="{{ k }}">
+                      <button name="Delete" type="submit">Delete</button>
+                    </form>
+
+                </div>
+                {% else %}
+                  {% if k != 0 %}
+                    <div class="alert alert-info" role="alert">
+                      <h2>{{ response_gpt_V4[k]["role"] }}</h1>
+                        {% for i in range(response_gpt_V4[k]['content']|length) %}
+                            <strong><p>Version {{ i }}</p></strong>
+                            <p>{{ response_gpt_V4[k]['content'][i] }}</p>
+                            
+                            {% for file in response_gpt_V4[k]['list_fichier'][i] %}
+                              <audio controls>
+                                <source src="../static/audio/{{ file }}" type="audio/wav">
+                                Your browser does not support the audio element.
+                              </audio>
+                            
+                            {% endfor %}
+
+                            <form method="POST" action="/conversation">
+                              <input type="hidden" name="id_message" value="{{ k }}">
+                              <button name="Delete" type="submit">Delete</button>
+                            </form>
+                          
+                        {% endfor %}
+                        <br>
+                    </div>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>      
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../static/bootstrap.css">
+    <script src="../static/bootstrap.js"></script>
+    <script src="../static/jquery.js"></script>
+    <script src="../static/jquery-ui.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>File Upload</title>
+  
+  </head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('index') }}">GptVoice</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </nav>
+    <div class="container mt-4">
+        <h1>Conversation</h1>
+
+        <!-- Formulaire pour ajouter un message -->
+        <form method="post" action="/conversation">
+            <div class="form-group">
+                <label for="message">Titre :</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+                <label for="message">Introduction de l'IA :</label>
+                <input type="text" class="form-control" id="message" name="message" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+
+        <hr>
+
+        <!-- Afficher la conversation sous forme de tableau Bootstrap -->
+        <h2>Conversation actuelle:</h2>
+        <table class="table table-grey">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Voir</th>
+                    <th scope="col">Supprimer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in conversation %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ message['title'] }}</td>
+                        <td>
+                            <!-- Bouton pour rediriger vers la page /conversation -->
+                            <form action="{{ url_for('conversation', message_id=loop.index) }}" method="post">
+                                <input type="hidden" name="show_conversation" value="{{ message['title'] }}">
+                                <button type="submit" class="btn btn-info">Voir</button>
+                            </form>
+                        </td>
+                        <td>
+                            <!-- Bouton pour rediriger vers la page /conversation -->
+                            <form action="{{ url_for('index', message_id=loop.index) }}" method="post">
+                                <input type="hidden" name="delete_conversation" value="{{ message['title'] }}">
+                                <button type="submit" class="btn btn-alert">Supprimer</button>
+                            </form>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
